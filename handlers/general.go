@@ -23,6 +23,17 @@ func HandleNumbersRequest(c echo.Context) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+	intSlc, errMsg := reqBodyToIntSlice(b)
+	if errMsg.Error != "" {
+		return c.JSON(http.StatusBadRequest, errMsg)
+	}
+	res := pnc.CheckNumbers(intSlc)
+
+	return c.JSON(http.StatusOK, res)
+}
+
+// Converts []byte request body to slice of integers
+func reqBodyToIntSlice(b []byte) ([]int, ErrorMessage) {
 	reqBody := string(b)
 
 	// remove all the whitespaces
@@ -36,14 +47,12 @@ func HandleNumbersRequest(c echo.Context) error {
 	strSlc := strings.Split(reqBody, ",")
 	intSlc := make([]int, len(strSlc))
 	for i, s := range strSlc {
-		intSlc[i], err = strconv.Atoi(s)
+		value, err := strconv.Atoi(s)
 		if err != nil {
 			errMessage := ErrorMessage{Error: fmt.Sprintf("the given input is invalid. Element on index %x is not a number", i)}
-			return c.JSON(http.StatusBadRequest, errMessage)
+			return intSlc, errMessage
 		}
+		intSlc[i] = value
 	}
-
-	res := pnc.CheckNumbers(intSlc)
-
-	return c.JSON(http.StatusOK, res)
+	return intSlc, ErrorMessage{}
 }
