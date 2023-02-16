@@ -20,5 +20,5 @@ func main() {
 
 	e.POST("/", handlers.HandleNumbersRequest)
 
-	e.Start(":8000")
+	e.Logger.Fatal(e.Start(":8000"))
 }
