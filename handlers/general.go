@@ -27,8 +27,11 @@ func HandleNumbersRequest(c echo.Context) error {
 
 	// remove all the whitespaces
 	reqBody = strings.ReplaceAll(reqBody, " ", "")
-	// remove [ ] brackets
-	reqBody = reqBody[1 : len(reqBody)-1]
+
+	// remove [ ] brackets if they exist
+	if reqBody[0] == '[' && reqBody[len(reqBody)-1] == ']' {
+		reqBody = reqBody[1 : len(reqBody)-1]
+	}
 
 	strSlc := strings.Split(reqBody, ",")
 	intSlc := make([]int, len(strSlc))
